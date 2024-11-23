@@ -22,7 +22,7 @@ public class AdminController {
     public ResponseEntity<?> getAllUsers(){
         List<UserModel> allUsers =  userServices.getAll();
         if (allUsers != null && !allUsers.isEmpty()){
-            return new ResponseEntity<>(allUsers, HttpStatus.ACCEPTED.OK);
+            return new ResponseEntity<>(allUsers, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
