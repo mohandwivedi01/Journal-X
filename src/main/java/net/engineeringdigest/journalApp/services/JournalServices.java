@@ -9,13 +9,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@Component
+//@Component
+@Service
 public class JournalServices {
     @Autowired
     private JournalRepository journalRepository;
@@ -27,10 +29,14 @@ public class JournalServices {
 
     @Transactional
     public void saveJournalEntries(JournalModel journalEntry, String userName){
+        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
         try {
             UserModel user = userServices.findByUserName(userName);
+            System.out.println("user: "+user);
             JournalModel savedJournal = journalRepository.save(journalEntry);
+            System.out.println("savedjournal: "+savedJournal);
             user.getJournalEntries().add(savedJournal);
+            System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
             userServices.saveUser(user);
         }catch (Exception e){
 //            logger.info("hahahahahhahahahhahahahahahha");

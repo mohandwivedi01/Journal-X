@@ -28,7 +28,9 @@ public class JurnalController {
 
     @GetMapping()
     public ResponseEntity<?> getAllUserJournals() {
+        System.out.println("888888888888888888888888888888888");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(authentication);
         String userName = authentication.getName();
         UserModel user = userServices.findByUserName(userName);
         List<JournalModel> all = user.getJournalEntries();
@@ -40,24 +42,33 @@ public class JurnalController {
 
     @GetMapping("id/{journalId}")
     public ResponseEntity<?> getJournalById(@PathVariable ObjectId journalId){
+        System.out.println("*******************************");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(authentication);
         String userName = authentication.getName();
+        System.out.println("username: "+userName);
         UserModel user = userServices.findByUserName(userName);
+        System.out.println("user: "+user);
         boolean journalExists = user.getJournalEntries().stream().anyMatch(journal -> journal.getId().equals(journalId));
+        System.out.println("journalExists: "+journalExists);
         if (journalExists){
             Optional<JournalModel> journal = journalServices.findJournalById(journalId);
             if (journal.isPresent())
                 return new ResponseEntity<>(journal, HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping
     public ResponseEntity<?> createEntry(@RequestBody JournalModel journalEntry){
+        System.out.println("#######################");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("authentication: "+authentication);
         String userName = authentication.getName();
+        System.out.println("username: "+userName);
         try {
-              journalServices.saveJournalEntries(journalEntry, userName);
+            System.out.println("inside try block");
+            journalServices.saveJournalEntries(journalEntry, userName);
 
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

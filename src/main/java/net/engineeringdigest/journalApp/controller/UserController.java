@@ -1,7 +1,9 @@
 package net.engineeringdigest.journalApp.controller;
 
+import net.engineeringdigest.journalApp.api.response.WeatherResponse;
 import net.engineeringdigest.journalApp.model.UserModel;
 import net.engineeringdigest.journalApp.services.UserServices;
+import net.engineeringdigest.journalApp.services.WeatherServices;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,20 @@ import java.util.Optional;
 public class UserController {
     @Autowired
     private UserServices userServices;
+    @Autowired
+    private WeatherServices weatherServices;
+
+//    @GetMapping
+//    public ResponseEntity<?> getWeather(@PathVariable String city) {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        WeatherResponse response = weatherServices.getWeather(city);
+//        if (response != null){
+//            return new ResponseEntity<>("the weather update is "+response.getCurrent(), HttpStatus.OK);
+//        }
+//        return new ResponseEntity<>("something went wrong..", HttpStatus.BAD_REQUEST);
+//    }
+
+
 
 //    @GetMapping("get-all")
 //    public List<UserModel> getAllUsers(){
@@ -28,12 +44,7 @@ public class UserController {
     public Optional<UserModel> getUserById(@PathVariable ObjectId id){
         return userServices.getUserById(id);
     }
-    @GetMapping
-    public ResponseEntity<?> greeting() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        return new ResponseEntity<>("hi "+authentication.getName(), HttpStatus.OK);
-    }
 
     @PutMapping
     public ResponseEntity<?> updateUser(@RequestBody UserModel user){
