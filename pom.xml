@@ -15,7 +15,10 @@
 	<description>E2EE Journal App</description>
 	<properties>
 		<java.version>8.1</java.version>
+		<sonar.organization>easydevdocs</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

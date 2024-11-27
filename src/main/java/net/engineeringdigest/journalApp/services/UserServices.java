@@ -16,18 +16,18 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-@Slf4j
+@Slf4j //if we use Slf4j then there is not need to create the instance of logger
 public class UserServices {
 
     @Autowired
     private UserRepository userRepository;
 
-//    Logger logger = LoggerFactory.getLogger(UserServices.class);
+//    Logger logger = LoggerFactory.getLogger(UserServices.class); not need to do this instead use @Slf4j annotation.
 
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public void saveUser(UserModel user){
-//        log.info("88888888888888888888888888888888888888888888");
+        log.info("88888888888888888888888888888888888888888888");
         userRepository.save(user);
     }
 
@@ -39,7 +39,7 @@ public class UserServices {
             return true;
 
         }catch (Exception e){
-//            logger.info("fdgxcvjkjlkjvgfd");
+            log.info("fdgxcvjkjlkjvgfd");
             return false;
         }
     }
