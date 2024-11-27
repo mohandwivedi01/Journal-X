@@ -19,17 +19,21 @@ public class UserController {
     @Autowired
     private UserServices userServices;
 
-    @GetMapping("get-all")
-    public List<UserModel> getAllUsers(){
-        return userServices.getAll();
-    }
+//    @GetMapping("get-all")
+//    public List<UserModel> getAllUsers(){
+//        return userServices.getAll();
+//    }
 
     @GetMapping("/id{id}")
     public Optional<UserModel> getUserById(@PathVariable ObjectId id){
         return userServices.getUserById(id);
     }
+    @GetMapping
+    public ResponseEntity<?> greeting() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-
+        return new ResponseEntity<>("hi "+authentication.getName(), HttpStatus.OK);
+    }
 
     @PutMapping
     public ResponseEntity<?> updateUser(@RequestBody UserModel user){

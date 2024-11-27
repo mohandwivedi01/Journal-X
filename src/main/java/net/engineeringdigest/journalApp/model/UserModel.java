@@ -27,11 +27,7 @@ public class UserModel {
     private String password;
 
     @DBRef
-    private List<JournalModel>  journalEntries = new ArrayList<>();
+    private List<JournalModel> journalEntries = new ArrayList<>();
     private List<String> roles;
 
-//    @CreatedDate
-//    private LocalDateTime createdAt;
-//    @LastModifiedDate
-//    private LocalDateTime updatedAt;
 }

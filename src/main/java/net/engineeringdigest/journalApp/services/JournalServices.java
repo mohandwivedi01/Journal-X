@@ -1,5 +1,6 @@
 package net.engineeringdigest.journalApp.services;
 
+import lombok.extern.slf4j.Slf4j;
 import net.engineeringdigest.journalApp.model.JournalModel;
 import net.engineeringdigest.journalApp.model.UserModel;
 import net.engineeringdigest.journalApp.repository.JournalRepository;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Component
 public class JournalServices {
     @Autowired
@@ -20,13 +22,21 @@ public class JournalServices {
     @Autowired
     private UserServices userServices;
 
+//    LoggerFactory is an utility class, each logger associated to a class
+//    private Logger logger = LoggerFactory.getLogger(JournalServices.class);
 
     @Transactional
     public void saveJournalEntries(JournalModel journalEntry, String userName){
-        UserModel user = userServices.findByUserName(userName);
-        JournalModel savedJournal = journalRepository.save(journalEntry);
-        user.getJournalEntries().add(savedJournal);
-        userServices.saveUser(user);
+        try {
+            UserModel user = userServices.findByUserName(userName);
+            JournalModel savedJournal = journalRepository.save(journalEntry);
+            user.getJournalEntries().add(savedJournal);
+            userServices.saveUser(user);
+        }catch (Exception e){
+//            logger.info("hahahahahhahahahhahahahahahha");
+            log.info("An error occurred while saving the entry.",e);
+            throw new RuntimeException("An error occurred while saving the entry.",e);
+        }
     }
 
     public void saveJournalEntries(JournalModel journalEntry){
@@ -55,7 +65,7 @@ public class JournalServices {
             System.out.println(e);
             throw new RuntimeException("An error occurec while deleting the entry. ",e);
         }
-        return removed;
+        return removed; 
     }
 
 }

@@ -20,8 +20,10 @@ public class AdminController {
 
     @GetMapping("/all-users")
     public ResponseEntity<?> getAllUsers(){
+        System.out.println("chal raha hai ********************");
         List<UserModel> allUsers =  userServices.getAll();
         if (allUsers != null && !allUsers.isEmpty()){
+            System.out.println("******************: "+allUsers);
             return new ResponseEntity<>(allUsers, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
