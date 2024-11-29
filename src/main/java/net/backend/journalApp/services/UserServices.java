@@ -12,51 +12,57 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-//@Component
+// Service annotation to indicate this class is a service component for Spring
 @Service
-@Slf4j //if we use Slf4j then there is not need to create the instance of logger
+@Slf4j // Slf4j annotation provides a logger instance, no need for LoggerFactory
 public class UserServices {
 
+    // Autowired to inject the UserRepository for database access
     @Autowired
     private UserRepository userRepository;
 
-//    Logger logger = LoggerFactory.getLogger(UserServices.class); not need to do this instead use @Slf4j annotation.
-
+    // Password encoder for hashing the user password
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    // Method to save a user to the repository
     public void saveUser(UserModel user){
-        userRepository.save(user);
+        userRepository.save(user);  // Save user in the database
     }
 
+    // Method to save a new user with encrypted password
     public boolean saveNewUser(UserModel user){
         try{
+            // Encode the user's password before saving
             user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRoles(user.getRoles());
-            userRepository.save(user);
+            user.setRoles(user.getRoles());  // Assign roles to the user
+            userRepository.save(user);  // Save the user
             return true;
-
         }catch (Exception e){
-            log.error("something went wrong while during signup for user: {}",user.getUserName(), e);
-            return false;
+            // Log the error if any exception occurs during user signup
+            log.error("Something went wrong during signup for user: {}", user.getUserName(), e);
+            return false;  // Return false if there was an error
         }
     }
 
+    // Method to get all users from the repository
     public List<UserModel> getAll(){
-        return userRepository.findAll();
+        return userRepository.findAll();  // Return all users
     }
 
+    // Method to find a user by their ID
     public Optional<UserModel> getUserById(ObjectId id){
-        return userRepository.findById(id);
+        return userRepository.findById(id);  // Return user if found
     }
 
+    // Method to delete a user by their ID
     public Optional<UserModel> deleteUserById(ObjectId id){
-        Optional<UserModel> user = userRepository.findById(id);
-        userRepository.deleteById(id);
-        return user;
+        Optional<UserModel> user = userRepository.findById(id);  // Get user by ID
+        userRepository.deleteById(id);  // Delete the user from the repository
+        return user;  // Return the deleted user
     }
 
+    // Method to find a user by their username
     public UserModel findByUserName(String userName){
-        return userRepository.findByUserName(userName);
+        return userRepository.findByUserName(userName);  // Return the user with the given username
     }
-
 }

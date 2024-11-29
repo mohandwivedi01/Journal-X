@@ -13,52 +13,80 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-
-@RestController
-@RequestMapping("/public")
-@Slf4j
+@RestController // Indicates that this class is a REST controller.
+@RequestMapping("/public") // Maps all endpoints in this controller under the "/public" path.
+@Slf4j // Enables logging functionality using Lombok.
 public class PublicController {
 
     @Autowired
-    private UserServices userServices;
+    private UserServices userServices; // Service for user-related operations.
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager; // Manages user authentication.
 
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private UserDetailsServiceImpl userDetailsService; // Custom implementation of Spring Security's UserDetailsService.
 
     @Autowired
-    private JwtUtil jwtUtil;
+    private JwtUtil jwtUtil; // Utility class for generating and validating JWTs.
 
+    /**
+     * Health check endpoint to verify if the application is running.
+     *
+     * @return A simple string response indicating the application is running.
+     */
     @GetMapping
-    public String healthCheck(){return "i'm running...";}
+    public String healthCheck() {
+        return "I'm running...";
+    }
 
+    /**
+     * Endpoint to create a new user.
+     *
+     * @param user The user model containing user details (e.g., username, password).
+     * @return HTTP 200 (OK) if the user is created successfully,
+     *         or HTTP 404 (NOT_FOUND) if user creation fails.
+     */
     @PostMapping("/signup")
-    public ResponseEntity<?> createUser(@RequestBody UserModel user){
-        System.out.println(user);
-        boolean check = userServices.saveNewUser(user);
-        System.out.println(check);
-        if (check) {
+    public ResponseEntity<?> createUser(@RequestBody UserModel user) {
+        log.info("Attempting to create a new user: {}", user);
+        boolean isUserSaved = userServices.saveNewUser(user);
+        if (isUserSaved) {
+            log.info("User created successfully.");
             return new ResponseEntity<>(HttpStatus.OK);
         }
+        log.warn("User creation failed.");
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * Endpoint for user login and JWT token generation.
+     *
+     * @param user The user model containing username and password for authentication.
+     * @return A JWT token in the response body with HTTP 200 (OK) if authentication is successful,
+     *         or throws an exception if authentication fails.
+     * @throws Exception If an error occurs during authentication.
+     */
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody UserModel user) throws Exception {
-        try{
+        try {
+            log.info("Attempting login for user: {}", user.getUserName());
+
+            // Authenticate the user using the provided username and password.
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword())
             );
+
+            // Load user details after successful authentication.
             UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUserName());
+
+            // Generate a JWT token for the authenticated user.
             String jwt = jwtUtil.generateToken(userDetails.getUsername());
+            log.info("Login successful for user: {}. JWT token generated.", user.getUserName());
             return new ResponseEntity<>(jwt, HttpStatus.OK);
-        }catch (Exception e){
-            log.error("Exception occurred while createAuthenticationToken ", e);
-            throw new Exception(e);
+        } catch (Exception e) {
+            log.error("Exception occurred during login: {}", e.getMessage(), e);
+            throw new Exception("Authentication failed.", e);
         }
     }
-
-
 }

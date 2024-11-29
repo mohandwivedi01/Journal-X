@@ -13,42 +13,60 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@RestController
-@RequestMapping("/user")
+@RestController // This class serves as a REST controller.
+@RequestMapping("/user") // All methods in this controller are mapped to "/user".
 public class UserController {
-    @Autowired
-    private UserServices userServices;
-    @Autowired
-    private WeatherServices weatherServices;
 
-//    @GetMapping
-//    public ResponseEntity<?> getWeather(@PathVariable String city) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        WeatherResponse response = weatherServices.getWeather(city);
-//        if (response != null){
-//            return new ResponseEntity<>("the weather update is "+response.getCurrent(), HttpStatus.OK);
-//        }
-//        return new ResponseEntity<>("something went wrong..", HttpStatus.BAD_REQUEST);
-//    }
+    @Autowired
+    private UserServices userServices; // Service for user-related operations.
 
-    @GetMapping("/id{id}")
-    public Optional<UserModel> getUserById(@PathVariable ObjectId id){
-        return userServices.getUserById(id);
+    @Autowired
+    private WeatherServices weatherServices; // Service for weather-related functionality.
+
+    /**
+     * Endpoint to retrieve a user's details by their ID.
+     *
+     * @param id The ID of the user.
+     * @return A ResponseEntity containing the user information or a 404 if the user is not found.
+     */
+    @GetMapping("/id{id}") // Maps the endpoint to "/user/id{id}".
+    public Optional<UserModel> getUserById(@PathVariable ObjectId id) {
+        return userServices.getUserById(id); // Retrieves a user by their ID.
     }
 
-
-    @PutMapping
-    public ResponseEntity<?> updateUser(@RequestBody UserModel user){
+    /**
+     * Endpoint to update a user's details.
+     * Only updates the username and password.
+     *
+     * @param user The user model containing the updated details.
+     * @return HTTP 200 (OK) if the update is successful, HTTP 204 (NO_CONTENT) if the user doesn't exist.
+     */
+    @PutMapping // Maps to "/user" for updating the user details.
+    public ResponseEntity<?> updateUser(@RequestBody UserModel user) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userName = authentication.getName();;
+        String userName = authentication.getName(); // Retrieves the username from the authentication context.
 
+        // Finds the existing user by username.
         UserModel isUser = userServices.findByUserName(userName);
-        if(isUser != null){
+        if (isUser != null) {
+            // Update the user's details with the new ones.
             isUser.setUserName(user.getUserName());
             isUser.setPassword(user.getPassword());
-            userServices.saveNewUser(isUser);
-            return new ResponseEntity<>(HttpStatus.OK);
+            userServices.saveNewUser(isUser); // Save the updated user.
+            return new ResponseEntity<>(HttpStatus.OK); // Return HTTP 200 if the update is successful.
         }
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Return HTTP 204 if the user is not found.
     }
+
+    // It appears to retrieve weather information for a given city.
+    // @GetMapping
+    // public ResponseEntity<?> getWeather(@PathVariable String city) {
+    //     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    //     WeatherResponse response = weatherServices.getWeather(city); // Calls the weather service.
+    //     if (response != null){
+    //         return new ResponseEntity<>("The weather update is " + response.getCurrent(), HttpStatus.OK);
+    //     }
+    //     return new ResponseEntity<>("Something went wrong..", HttpStatus.BAD_REQUEST); // Return a 400 if there's an error.
+    // }
 }

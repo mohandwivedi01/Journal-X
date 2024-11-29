@@ -13,62 +13,58 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-//@Component
 @Service
 public class JournalServices {
     @Autowired
     private JournalRepository journalRepository;
+
     @Autowired
     private UserServices userServices;
 
-//    LoggerFactory is an utility class, each logger associated to a class
-//    private Logger logger = LoggerFactory.getLogger(JournalServices.class);
-
+    // Save a journal entry and associate it with the user
     @Transactional
-    public void saveJournalEntries(JournalModel journalEntry, String userName){
-        System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+    public void saveJournalEntries(JournalModel journalEntry, String userName) {
         try {
             UserModel user = userServices.findByUserName(userName);
-            System.out.println("user: "+user);
             JournalModel savedJournal = journalRepository.save(journalEntry);
-            System.out.println("savedjournal: "+savedJournal);
             user.getJournalEntries().add(savedJournal);
-            System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
             userServices.saveUser(user);
-        }catch (Exception e){
-//            logger.info("hahahahahhahahahhahahahahahha");
-            log.info("An error occurred while saving the entry.",e);
-            throw new RuntimeException("An error occurred while saving the entry.",e);
+        } catch (Exception e) {
+            log.error("An error occurred while saving the entry.", e);
+            throw new RuntimeException("An error occurred while saving the entry.", e);
         }
     }
 
-    public void saveJournalEntries(JournalModel journalEntry){
+    // Save a journal entry (without user association)
+    public void saveJournalEntries(JournalModel journalEntry) {
         journalRepository.save(journalEntry);
     }
 
-    public List<JournalModel> findAllJournals(){
+    // Find all journal entries
+    public List<JournalModel> findAllJournals() {
         return journalRepository.findAll();
     }
 
-    public Optional<JournalModel> findJournalById(ObjectId id){
+    // Find a journal entry by ID
+    public Optional<JournalModel> findJournalById(ObjectId id) {
         return journalRepository.findById(id);
     }
 
+    // Delete a journal entry by ID and dissociate it from the user
     @Transactional
-    public boolean deleteJournalById(ObjectId id, String userName){
+    public boolean deleteJournalById(ObjectId id, String userName) {
         boolean removed = false;
-        try{
+        try {
             UserModel user = userServices.findByUserName(userName);
-            removed = user.getJournalEntries().removeIf(x->x.getId().equals(id));
-            if (removed){
+            removed = user.getJournalEntries().removeIf(x -> x.getId().equals(id));
+            if (removed) {
                 userServices.saveUser(user);
                 journalRepository.deleteById(id);
             }
-        }catch (Exception e){
-            System.out.println(e);
-            throw new RuntimeException("An error occurec while deleting the entry. ",e);
+        } catch (Exception e) {
+            log.error("An error occurred while deleting the entry.", e);
+            throw new RuntimeException("An error occurred while deleting the entry.", e);
         }
-        return removed; 
+        return removed;
     }
-
 }
