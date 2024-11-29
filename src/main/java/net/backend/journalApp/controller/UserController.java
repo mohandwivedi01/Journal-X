@@ -2,7 +2,6 @@ package net.backend.journalApp.controller;
 
 import net.backend.journalApp.model.UserModel;
 import net.backend.journalApp.services.UserServices;
-import net.backend.journalApp.services.WeatherServices;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,8 +19,6 @@ public class UserController {
     @Autowired
     private UserServices userServices; // Service for user-related operations.
 
-    @Autowired
-    private WeatherServices weatherServices; // Service for weather-related functionality.
 
     /**
      * Endpoint to retrieve a user's details by their ID.
@@ -59,14 +56,5 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT); // Return HTTP 204 if the user is not found.
     }
 
-    // It appears to retrieve weather information for a given city.
-    // @GetMapping
-    // public ResponseEntity<?> getWeather(@PathVariable String city) {
-    //     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    //     WeatherResponse response = weatherServices.getWeather(city); // Calls the weather service.
-    //     if (response != null){
-    //         return new ResponseEntity<>("The weather update is " + response.getCurrent(), HttpStatus.OK);
-    //     }
-    //     return new ResponseEntity<>("Something went wrong..", HttpStatus.BAD_REQUEST); // Return a 400 if there's an error.
-    // }
+
 }
